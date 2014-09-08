@@ -1,0 +1,1324 @@
+CREATE DATABASE [Archive]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'Archive', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\DATA\Archive.mdf' , SIZE = 5120KB , FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'Archive_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\DATA\Archive_log.ldf' , SIZE = 2048KB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [Archive] SET COMPATIBILITY_LEVEL = 110
+GO
+ALTER DATABASE [Archive] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [Archive] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [Archive] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [Archive] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [Archive] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [Archive] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [Archive] SET AUTO_CREATE_STATISTICS ON 
+GO
+ALTER DATABASE [Archive] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [Archive] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [Archive] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [Archive] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [Archive] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [Archive] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [Archive] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [Archive] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [Archive] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [Archive] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [Archive] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [Archive] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [Archive] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [Archive] SET  READ_WRITE 
+GO
+ALTER DATABASE [Archive] SET RECOVERY FULL 
+GO
+ALTER DATABASE [Archive] SET  MULTI_USER 
+GO
+ALTER DATABASE [Archive] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [Archive] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+GO
+USE [Archive]
+GO
+IF NOT EXISTS (SELECT name FROM sys.filegroups WHERE is_default=1 AND name = N'PRIMARY') ALTER DATABASE [Archive] MODIFY FILEGROUP [PRIMARY] DEFAULT
+GO
+GO
+EXEC sys.sp_cdc_enable_db
+GO
+GO
+/****** Object:  User [skib_server]    Script Date: 21.08.2014 8:50:28 ******/
+CREATE USER [skib_server] FOR LOGIN [skib_server_PC\skib_server] WITH DEFAULT_SCHEMA=[dbo]
+GO
+/****** Object:  User [Гость]    Script Date: 21.08.2014 8:50:28 ******/
+CREATE USER [Гость] FOR LOGIN [SKIB_SERVER_PC\Гость] WITH DEFAULT_SCHEMA=[dbo]
+GO
+/****** Object:  DatabaseRole [admin]    Script Date: 21.08.2014 8:50:28 ******/
+CREATE ROLE [admin]
+GO
+ALTER ROLE [db_owner] ADD MEMBER [cdc]
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Вид_Документ_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+USE [master]
+GO
+CREATE LOGIN [admin] WITH PASSWORD=N'4qypgm23qy', DEFAULT_DATABASE=[Archive], CHECK_EXPIRATION=OFF, CHECK_POLICY=ON
+GO
+ALTER SERVER ROLE [serveradmin] ADD MEMBER [admin]
+GO
+ALTER SERVER ROLE [sysadmin] ADD MEMBER [admin]
+GO
+USE [Archive]
+GO
+CREATE USER [admin] FOR LOGIN [admin]
+GO
+USE [Archive]
+GO
+ALTER ROLE [admin] ADD MEMBER [admin]
+GO
+
+
+CREATE PROC [dbo].[SDAC_Вид_Документ_Delete] 
+    @Ключ_Вид_Документ int
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+
+	DELETE
+	FROM   [dbo].[Вид_Документ]
+	WHERE  [Ключ_Вид_Документ] = @Ключ_Вид_Документ
+
+	COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Вид_Документ_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Вид_Документ_Insert] 
+    @Ключ_Вид_Документ int,
+    @Наименование_Вид_Документ varchar(100) = NULL,
+    @Определение_Вид_Документ varchar(1000) = NULL
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Вид_Документ] ([Ключ_Вид_Документ], [Наименование_Вид_Документ], [Определение_Вид_Документ])
+	SELECT @Ключ_Вид_Документ, @Наименование_Вид_Документ, @Определение_Вид_Документ
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Вид_Документ_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Вид_Документ_Select] 
+    @Ключ_Вид_Документ int
+AS  
+	SET XACT_ABORT ON  
+
+		if (@Ключ_Вид_Документ is not null and @Ключ_Вид_Документ != 0)
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Вид_Документ] 
+			COMMIT
+		END
+		ELSE
+		BEGIN
+
+	BEGIN TRAN
+
+	SELECT [Ключ_Вид_Документ], [Наименование_Вид_Документ], [Определение_Вид_Документ] 
+	FROM   [dbo].[Вид_Документ] 
+	WHERE  [Ключ_Вид_Документ] = @Ключ_Вид_Документ 
+
+	COMMIT
+	End
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Вид_Документ_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Вид_Документ_Update] 
+    @Ключ_Вид_Документ int,
+    @Наименование_Вид_Документ varchar(100) = NULL,
+    @Определение_Вид_Документ varchar(1000) = NULL
+AS  
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+
+	UPDATE [dbo].[Вид_Документ]
+	SET    [Ключ_Вид_Документ] = @Ключ_Вид_Документ, [Наименование_Вид_Документ] = @Наименование_Вид_Документ, [Определение_Вид_Документ] = @Определение_Вид_Документ
+	WHERE  [Ключ_Вид_Документ] = @Ключ_Вид_Документ
+
+	COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Гриф_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Гриф_Delete] 
+    @Ключ_Гриф int
+
+AS 
+
+SET XACT_ABORT ON  
+
+BEGIN TRAN
+
+
+DELETE
+
+FROM   [dbo].[Гриф]
+
+WHERE  [Ключ_Гриф] = @Ключ_Гриф
+
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Гриф_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Гриф_Insert] 
+    @Наименование_Гриф varchar(200) = NULL,  
+    @Обозначение_Гриф varchar(20) = NULL,
+    @Определение_Гриф varchar(200) = NULL
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Гриф] ([Наименование_Гриф], [Обозначение_Гриф], [Определение_Гриф])
+	SELECT @Наименование_Гриф, @Обозначение_Гриф, @Определение_Гриф
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Гриф_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Гриф_Select] 
+    @Ключ_Гриф int
+AS  
+	SET XACT_ABORT ON  
+		if (@Ключ_Гриф is not null and @Ключ_Гриф != 0)
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Гриф] 
+			COMMIT
+		END
+		ELSE
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Гриф] 
+			WHERE  [Ключ_Гриф] = @Ключ_Гриф 
+			COMMIT
+		END
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Гриф_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Гриф_Update] 
+ 
+   @Ключ_Гриф int,
+   @Наименование_Гриф varchar(200) = NULL,  
+   @Обозначение_Гриф varchar(20) = NULL,
+   @Определение_Гриф varchar(200) = NULL           
+  
+  AS
+   
+SET XACT_ABORT ON
+BEGIN TRAN
+
+
+UPDATE [dbo].[Гриф]
+SET    [Наименование_Гриф] = @Наименование_Гриф, [Обозначение_Гриф] = @Обозначение_Гриф, [Определение_Гриф]=@Определение_Гриф
+WHERE  [Ключ_Гриф] = @Ключ_Гриф
+
+	
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Changes]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[SDAC_Документ_Changes] 
+	@Ключ_Документ int
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+DECLARE @from_lsn binary(10), @to_lsn binary(10)
+
+SET @from_lsn = sys.fn_cdc_get_min_lsn('dbo_Документ')
+SET @to_lsn   = sys.fn_cdc_get_max_lsn()
+BEGIN TRAN
+SELECT q.*, o.*, m.tran_end_time AS COMMIT_TIME
+FROM cdc.fn_cdc_get_all_changes_dbo_Документ
+  (@from_lsn, @to_lsn, N'all') q
+INNER JOIN cdc.lsn_time_mapping m
+	ON q.__$start_lsn = m.start_lsn  
+INNER JOIN dbo.Организация o
+	ON o.Ключ_Организация = q.Ключ_Организация 
+WHERE Ключ_Документ = @Ключ_Документ and __$update_mask = 0x2000
+COMMIT
+END
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Документ_Delete] 
+    @Ключ_Документ int
+AS 
+	SET XACT_ABORT ON  
+	BEGIN TRAN
+	DELETE
+	FROM   [dbo].[Документ]
+	WHERE  [Ключ_Документ] = @Ключ_Документ
+	COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Документ_Insert] 
+    @Ключ_Родитель_Документ int = NULL,
+    @Наименование_Документ varchar(500) = NULL,
+    @Инвентарный_Номер_Документ varchar(20) = NULL,
+    @Дата_Регистрации_Документ datetime = NULL,
+    @Обозначение_Документ varchar(20) = NULL,
+    @Количество_Листов_Документ int = NULL,
+    @Ключ_Формат int,
+    @Выпущен_Документ varchar(200) = NULL,
+    @Принят_Документ varchar(20) = NULL,
+    @Примечание_Документ varchar(20) = NULL,
+    @Ключ_Вид_Документ int = NULL,
+    @Ключ_Тип_Документ int = NULL,
+    @Ключ_Организация int = NULL,
+	@Ключ_Статус_Документ int = NULL
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Документ] ([Ключ_Родитель_Документ], [Наименование_Документ], [Инвентарный_Номер_Документ], [Дата_Регистрации_Документ], [Обозначение_Документ], [Количество_Листов_Документ], [Ключ_Формат], [Выпущен_Документ], [Принят_Документ], [Примечание_Документ], [Ключ_Вид_Документ], [Ключ_Тип_Документ], [Ключ_Организация], [Ключ_Статус_Документ])
+	SELECT @Ключ_Родитель_Документ, @Наименование_Документ, @Инвентарный_Номер_Документ, @Дата_Регистрации_Документ, @Обозначение_Документ, @Количество_Листов_Документ, @Ключ_Формат, @Выпущен_Документ, @Принят_Документ, @Примечание_Документ, @Ключ_Вид_Документ, @Ключ_Тип_Документ, @Ключ_Организация, @Ключ_Статус_Документ
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Документ_Select] 
+    @Ключ_Документ int
+AS  
+	SET XACT_ABORT ON
+	
+	if (@Ключ_Документ is not null and @Ключ_Документ != 0)
+	BEGIN
+		BEGIN TRAN
+		SELECT	[dbo].[Документ].[Ключ_Документ], 
+				[dbo].[Документ].[Инвентарный_Номер_Документ],
+				[dbo].[Документ].[Обозначение_Документ],
+				[dbo].[Документ].[Дата_Регистрации_Документ],
+				[dbo].[Документ].[Количество_Листов_Документ],
+				[dbo].[Вид_Документ].[Наименование_Вид_Документ],
+				[dbo].[Формат].[Обозначение_Формат],
+				[dbo].[Организация].[Наименование_Организация],
+				CAST(STUFF((select ',' + [Организация_Уровень_1].[Наименование_Организация] from [dbo].[Документ] as [Документ_Уровень_1], [dbo].[Организация] as [Организация_Уровень_1] where [Документ_Уровень_1].[Ключ_Родитель_Документ] = [dbo].[Документ].[Ключ_Документ] and [Организация_Уровень_1].[Ключ_Организация] = [Документ_Уровень_1].[Ключ_Организация] for xml path(''), type).value('.', 'varchar(max)'), 1, 1, '') AS VARCHAR(200)) as [Наименование_Организация_Копия]
+		FROM	[dbo].[Документ],
+				[dbo].[Вид_Документ],
+				[dbo].[Тип_Документ], 
+				[dbo].[Формат], 
+				[dbo].[Организация]
+		WHERE	[dbo].[Вид_Документ].Ключ_Вид_Документ = dbo.Документ.Ключ_Вид_Документ and 
+				[dbo].[Тип_Документ].[Ключ_Тип_Документ] = [dbo].[Документ].[Ключ_Тип_Документ] and
+				[dbo].[Формат].[Ключ_Формат] = [dbo].[Документ].[Ключ_Формат] and
+				[dbo].[Организация].[Ключ_Организация] = [dbo].[Документ].[Ключ_Организация] and
+				[dbo].[Документ].[Ключ_Документ] = @Ключ_Документ
+		COMMIT
+	END
+	else
+	BEGIN
+		BEGIN TRAN
+		SELECT	[dbo].[Документ].[Ключ_Документ], 
+				[dbo].[Документ].[Инвентарный_Номер_Документ],
+				[dbo].[Документ].[Обозначение_Документ],
+				[dbo].[Документ].[Дата_Регистрации_Документ],
+				[dbo].[Документ].[Количество_Листов_Документ],
+				[dbo].[Вид_Документ].[Наименование_Вид_Документ],
+				[dbo].[Формат].[Обозначение_Формат],
+				[dbo].[Организация].[Наименование_Организация],
+				CAST(STUFF((select ',' + [Организация_Уровень_1].[Наименование_Организация] from [dbo].[Документ] as [Документ_Уровень_1], [dbo].[Организация] as [Организация_Уровень_1] where [Документ_Уровень_1].[Ключ_Родитель_Документ] = [dbo].[Документ].[Ключ_Документ] and [Организация_Уровень_1].[Ключ_Организация] = [Документ_Уровень_1].[Ключ_Организация] for xml path(''), type).value('.', 'varchar(max)'), 1, 1, '') AS VARCHAR(200)) as [Наименование_Организация_Копия]
+		FROM	[dbo].[Документ],
+				[dbo].[Вид_Документ],
+				[dbo].[Тип_Документ], 
+				[dbo].[Формат], 
+				[dbo].[Организация]
+		WHERE	[dbo].[Вид_Документ].Ключ_Вид_Документ = dbo.Документ.Ключ_Вид_Документ and 
+				[dbo].[Тип_Документ].[Ключ_Тип_Документ] = [dbo].[Документ].[Ключ_Тип_Документ] and
+				[dbo].[Формат].[Ключ_Формат] = [dbo].[Документ].[Ключ_Формат] and
+				[dbo].[Организация].[Ключ_Организация] = [dbo].[Документ].[Ключ_Организация] and
+				[dbo].[Тип_Документ].[Ключ_Тип_Документ] in (2,3)
+		COMMIT
+		
+
+	END
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Документ_Update] 
+    @Ключ_Документ int,
+    @Ключ_Родитель_Документ int = NULL,
+    @Наименование_Документ varchar(500) = NULL,
+    @Инвентарный_Номер_Документ varchar(20) = NULL,
+    @Дата_Регистрации_Документ datetime = NULL,
+    @Обозначение_Документ varchar(20) = NULL,
+    @Количество_Листов_Документ int = NULL,
+    @Ключ_Формат int,
+    @Выпущен_Документ varchar(200) = NULL,
+    @Принят_Документ varchar(20) = NULL,
+    @Примечание_Документ varchar(20) = NULL,
+    @Ключ_Вид_Документ int = NULL,
+    @Ключ_Тип_Документ int = NULL,
+    @Ключ_Организация int = NULL,
+	@Ключ_Статус_Документ int = NULL
+AS  
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+
+	UPDATE [dbo].[Документ]
+	SET    [Ключ_Родитель_Документ] = @Ключ_Родитель_Документ, [Наименование_Документ] = @Наименование_Документ, [Инвентарный_Номер_Документ] = @Инвентарный_Номер_Документ, [Дата_Регистрации_Документ] = @Дата_Регистрации_Документ, [Обозначение_Документ] = @Обозначение_Документ, [Количество_Листов_Документ] = @Количество_Листов_Документ, [Ключ_Формат] = @Ключ_Формат, [Выпущен_Документ] = @Выпущен_Документ, [Принят_Документ] = @Принят_Документ, [Примечание_Документ] = @Примечание_Документ, [Ключ_Вид_Документ] = @Ключ_Вид_Документ, [Ключ_Тип_Документ] = @Ключ_Тип_Документ, [Ключ_Организация] = @Ключ_Организация, [Ключ_Статус_Документ] = @Ключ_Статус_Документ
+	WHERE  [Ключ_Документ] = @Ключ_Документ
+
+	COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Извещение_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Документ_Извещение_Delete] 
+    @Ключ_Документ_Извещение int
+
+AS 
+
+SET XACT_ABORT ON  
+
+BEGIN TRAN
+
+
+DELETE
+
+FROM   [dbo].[Документ_Извещение]
+
+WHERE  [Ключ_Документ_Извещение] = @Ключ_Документ_Извещение
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Извещение_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Документ_Извещение_Insert] 
+    @Ключ_Извещение int=NULL,  
+    @Ключ_Документ int = NULL,
+    @Номер_Документ_Извещение int = NULL,
+    @Количество_Листов_Документ_Извещение int = NULL
+
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Документ_Извещение] ([Ключ_Извещение], [Ключ_Документ], [Номер_Документ_Извещение], [Количество_Листов_Документ_Извещение])
+	SELECT @Ключ_Извещение, @Ключ_Документ, @Номер_Документ_Извещение, @Количество_Листов_Документ_Извещение
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Извещение_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Документ_Извещение_Select] 
+    @Ключ_Документ_Извещение int
+AS  
+	SET XACT_ABORT ON  
+	if (@Ключ_Документ_Извещение is not null and @Ключ_Документ_Извещение != 0)
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Документ_Извещение] 
+			COMMIT
+		END
+		ELSE
+		BEGIN
+		BEGIN TRAN
+		SELECT *
+		FROM   [dbo].[Документ_Извещение] 
+		WHERE  [Ключ_Документ_Извещение] = @Ключ_Документ_Извещение
+		COMMIT
+		End
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Документ_Извещение_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Документ_Извещение_Update] 
+ 
+   @Ключ_Документ_Извещение int,
+   @Ключ_Извещение int = NULL,
+   @Ключ_Документ int = NULL,
+   @Номер_Документ_Извещение int = NULL,  
+   @Количество_Листов_Документ_Извещение  int = NULL
+
+AS
+  
+SET XACT_ABORT ON
+BEGIN TRAN
+
+
+UPDATE [dbo].[Документ_Извещение]
+SET    [Ключ_Извещение] = @Ключ_Извещение, [Ключ_Документ] = @Ключ_Документ, [Номер_Документ_Извещение] = @Номер_Документ_Извещение, [Количество_Листов_Документ_Извещение] = @Количество_Листов_Документ_Извещение 
+WHERE  [Ключ_Документ_Извещение] = @Ключ_Документ_Извещение
+
+	
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Дочерний_Документ_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Дочерний_Документ_Select] 
+    @Ключ_Документ int
+AS  
+	SET XACT_ABORT ON  
+	BEGIN TRAN
+		SELECT	[dbo].[Документ].[Ключ_Документ], 
+				[dbo].[Документ].[Инвентарный_Номер_Документ],
+				[dbo].[Документ].[Обозначение_Документ],
+				[dbo].[Документ].[Дата_Регистрации_Документ],
+				[dbo].[Документ].[Количество_Листов_Документ],
+				[dbo].[Вид_Документ].[Наименование_Вид_Документ],
+				[dbo].[Формат].[Обозначение_Формат],
+				[dbo].[Организация].[Наименование_Организация]
+		FROM	[dbo].[Документ],
+				[dbo].[Вид_Документ],
+				[dbo].[Тип_Документ], 
+				[dbo].[Формат], 
+				[dbo].[Организация]
+		WHERE	[dbo].[Вид_Документ].Ключ_Вид_Документ = dbo.Документ.Ключ_Вид_Документ and 
+				[dbo].[Тип_Документ].[Ключ_Тип_Документ] = [dbo].[Документ].[Ключ_Тип_Документ] and
+				[dbo].[Формат].[Ключ_Формат] = [dbo].[Документ].[Ключ_Формат] and
+				[dbo].[Организация].[Ключ_Организация] = [dbo].[Документ].[Ключ_Организация] and
+				[dbo].[Документ].[Ключ_Родитель_Документ] = @Ключ_Документ 
+		COMMIT
+		
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Извещение_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Извещение_Delete] 
+    @Ключ_Извещение int
+
+AS 
+
+SET XACT_ABORT ON  
+
+BEGIN TRAN
+
+
+DELETE
+
+FROM   [dbo].[Извещение]
+
+WHERE  [Ключ_Извещение] = @Ключ_Извещение
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Извещение_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Извещение_Insert] 
+    @Наименование_Извещение varchar(200) = NULL,  
+    @Обозначение_Извещение varchar(20) = NULL,
+    @Дата_Выпуск_Извещение datetime = NULL,
+    @Дата_Срок_Извещение datetime = NULL,
+    @Ключ_Организация int = NULL
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Извещение] ([Наименование_Извещение], [Обозначение_Извещение], [Дата_Выпуск_Извещение], [Дата_Срок_Извещение], [Ключ_Организация])
+	SELECT @Наименование_Извещение, @Обозначение_Извещение, @Дата_Выпуск_Извещение, @Дата_Срок_Извещение, @Ключ_Организация
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Извещение_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Извещение_Select] 
+    @Ключ_Извещение int
+AS  
+	SET XACT_ABORT ON  
+
+	if (@Ключ_Извещение is not null and @Ключ_Извещение != 0)
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Извещение] 
+			COMMIT
+		END
+		ELSE
+		BEGIN
+
+		BEGIN TRAN
+		SELECT *
+		FROM   [dbo].[Извещение] 
+		WHERE  [Ключ_Извещение] = @Ключ_Извещение 
+		COMMIT
+ End
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Извещение_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Извещение_Update] 
+ 
+   @Ключ_Извещение int,
+   @Наименование_Извещение varchar(200) = NULL,
+   @Обозначение_Извещение varchar(20) = NULL,
+   @Дата_Выпуск_Извещение datetime = NULL,
+   @Дата_Срок_Извещение datetime = NULL,  
+   @Ключ_Организация int = NULL
+
+AS
+  
+SET XACT_ABORT ON
+BEGIN TRAN
+
+
+UPDATE [dbo].[Извещение]
+SET    [Наименование_Извещение] = @Наименование_Извещение, [Обозначение_Извещение] = @Обозначение_Извещение, [Дата_Выпуск_Извещение] = @Дата_Выпуск_Извещение, [Дата_Срок_Извещение] = @Дата_Срок_Извещение, [Ключ_Организация] = @Ключ_Организация
+WHERE  [Ключ_Извещение] = @Ключ_Извещение
+
+	
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Организация_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Организация_Delete] 
+    @Ключ_Организация int
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+
+	DELETE
+	FROM   [dbo].[Организация]
+	WHERE  [Ключ_Организация] = @Ключ_Организация
+
+	COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Организация_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Организация_Insert] 
+    @Ключ_Родитель_Организация int = NULL,
+    @Наименование_Организация varchar(200) = NULL,
+    @Обозначение_Организация varchar(20) = NULL,
+    @Телефон_Организация varchar(20) = NULL,
+    @Адрес_Организация varchar(200) = NULL,
+    @Почта_Организация varchar(200) = NULL
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Организация] ([Ключ_Родитель_Организация], [Наименование_Организация], [Обозначение_Организация], [Телефон_Организация], [Адрес_Организация], [Почта_Организация])
+	SELECT @Ключ_Родитель_Организация, @Наименование_Организация, @Обозначение_Организация, @Телефон_Организация, @Адрес_Организация, @Почта_Организация
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Организация_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Организация_Select] 
+    @Ключ_Организация int
+AS  
+	SET XACT_ABORT ON  
+
+	BEGIN TRAN
+
+	SELECT [Ключ_Организация], [Ключ_Родитель_Организация], [Наименование_Организация], [Обозначение_Организация], [Телефон_Организация], [Адрес_Организация], [Почта_Организация] 
+	FROM   [dbo].[Организация] 
+	WHERE  [Ключ_Организация] = @Ключ_Организация 
+
+	COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Организация_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Организация_Update] 
+    @Ключ_Организация int,
+    @Ключ_Родитель_Организация int = NULL,
+    @Наименование_Организация varchar(200) = NULL,
+    @Обозначение_Организация varchar(20) = NULL,
+    @Телефон_Организация varchar(20) = NULL,
+    @Адрес_Организация varchar(200) = NULL,
+    @Почта_Организация varchar(200) = NULL
+AS  
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+
+	UPDATE [dbo].[Организация]
+	SET    [Ключ_Родитель_Организация] = @Ключ_Родитель_Организация, [Наименование_Организация] = @Наименование_Организация, [Обозначение_Организация] = @Обозначение_Организация, [Телефон_Организация] = @Телефон_Организация, [Адрес_Организация] = @Адрес_Организация, [Почта_Организация] = @Почта_Организация
+	WHERE  [Ключ_Организация] = @Ключ_Организация
+
+	COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Статус_Документ_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create PROC [dbo].[SDAC_Статус_Документ_Delete] 
+ 
+@Ключ_Статус_Документ int
+
+AS 
+
+SET XACT_ABORT ON  
+
+BEGIN TRAN
+
+
+DELETE
+
+FROM   [dbo].[Статус_Документ]
+
+WHERE  [Ключ_Статус_Документ] = @Ключ_Статус_Документ
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Статус_Документ_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Статус_Документ_Insert] 
+    @Наименование_Статус_Документ varchar(200) = NULL ,  
+    @Обозначение_Статус_Документ varchar(20) = NULL
+
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Статус_Документ] ([Наименование_Статус_Документ], [Обозначение_Статус_Документ])
+	SELECT @Наименование_Статус_Документ, @Обозначение_Статус_Документ
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Статус_Документ_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Статус_Документ_Select] 
+    @Ключ_Статус_Документ int
+AS  
+	SET XACT_ABORT ON  
+
+	if (@Ключ_Статус_Документ is not null and @Ключ_Статус_Документ != 0)
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Статус_Документ] 
+			COMMIT
+		END
+		ELSE
+		BEGIN
+
+		BEGIN TRAN
+		SELECT *
+		FROM   [dbo].[Статус_Документ] 
+		WHERE  [Ключ_Статус_Документ] = @Ключ_Статус_Документ 
+		COMMIT
+		End
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Статус_Документ_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Статус_Документ_Update] 
+ 
+   @Ключ_Статус_Документ int,
+   @Наименование_Статус_Документ varchar(200) = NULL,  
+   @Обозначение_Статус_Документ varchar(20) = NULL
+
+AS
+  
+SET XACT_ABORT ON
+BEGIN TRAN
+
+
+UPDATE [dbo].[Статус_Документ]
+SET    [Наименование_Статус_Документ] = @Наименование_Статус_Документ, [Обозначение_Статус_Документ] = @Обозначение_Статус_Документ
+WHERE  [Ключ_Статус_Документ] = @Ключ_Статус_Документ
+
+	
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Тип_Документ_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Тип_Документ_Select] 
+    @Ключ_Тип_Документ int
+AS  
+	SET XACT_ABORT ON  
+
+		if (@Ключ_Тип_Документ is not null and @Ключ_Тип_Документ != 0)
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Тип_Документ] 
+			COMMIT
+		END
+		ELSE
+		BEGIN
+
+		BEGIN TRAN
+		SELECT *
+		FROM   [dbo].[Тип_Документ] 
+		WHERE  [Ключ_Тип_Документ] = @Ключ_Тип_Документ 
+		COMMIT
+		End
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Тип_Документ_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create PROC [dbo].[SDAC_Тип_Документ_Update] 
+ 
+   @Ключ_Тип_Документ int,
+   @Наименование_Тип_Документ varchar(20) = NULL,  
+   @Определение_Тип_Документ varchar(1000) = NULL
+  
+ AS
+   
+ SET XACT_ABORT ON
+BEGIN TRAN
+
+
+UPDATE [dbo].[Тип_Документ]
+SET    [Наименование_Тип_Документ]=@Наименование_Тип_Документ, [Определение_Тип_Документ]=@Определение_Тип_Документ
+WHERE  [Ключ_Тип_Документ] = @Ключ_Тип_Документ
+
+	
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Тип_Документа_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Тип_Документа_Delete] 
+    @Ключ_Тип_Документа int
+
+AS 
+
+SET XACT_ABORT ON  
+
+BEGIN TRAN
+
+
+DELETE
+
+FROM   [dbo].[Тип_Документа]
+
+WHERE  [Ключ_Тип_Документа] = @Ключ_Тип_Документа
+
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Тип_Документа_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create PROC [dbo].[SDAC_Тип_Документа_Insert] 
+    @Наименование_Тип_Документа varchar(20) = NULL,  
+    @Определение_Тип_Документа varchar(1000) = NULL
+
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Тип_Документа] ([Наименование_Тип_Документа ], [Определение_Тип_Документа])
+	SELECT @Наименование_Тип_Документа, @Определение_Тип_Документа
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Формат_Delete]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Формат_Delete] 
+    @Ключ_Формат int
+
+AS 
+
+SET XACT_ABORT ON  
+
+BEGIN TRAN
+
+
+DELETE
+
+FROM   [dbo].[Формат]
+
+WHERE  [Ключ_Формат] = @Ключ_Формат
+
+COMMIT
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Формат_Insert]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Формат_Insert] 
+    @Размеры_Формат varchar(20) = NULL,  
+    @Обозначение_Формат varchar(20) = NULL
+
+AS 
+	SET XACT_ABORT ON  
+	
+	BEGIN TRAN
+	
+	INSERT INTO [dbo].[Формат] ([Размеры_Формат], [Обозначение_Формат])
+	SELECT @Размеры_Формат, @Обозначение_Формат
+               
+	COMMIT
+	RETURN @@Identity
+
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Формат_Select]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[SDAC_Формат_Select] 
+    @Ключ_Формат int
+AS  
+	SET XACT_ABORT ON  
+
+	if (@Ключ_Формат is not null and @Ключ_Формат != 0)
+		BEGIN
+			BEGIN TRAN
+			SELECT *
+			FROM   [dbo].[Формат] 
+			COMMIT
+		END
+		ELSE
+		BEGIN
+
+		BEGIN TRAN
+		SELECT *
+		FROM   [dbo].[Формат] 
+		WHERE  [Ключ_Формат] = @Ключ_Формат 
+		COMMIT
+End
+GO
+/****** Object:  StoredProcedure [dbo].[SDAC_Формат_Update]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROC [dbo].[SDAC_Формат_Update] 
+ 
+   @Ключ_Формат int,
+   @Размеры_Формат varchar(20) = NULL,  
+   @Обозначение_Формат varchar(20) = NULL
+ 
+ AS
+   
+SET XACT_ABORT ON
+BEGIN TRAN
+
+
+UPDATE [dbo].[Формат]
+SET    [Размеры_Формат] = @Размеры_Формат, [Обозначение_Формат] = @Обозначение_Формат
+WHERE  [Ключ_Формат] = @Ключ_Формат
+
+	
+COMMIT
+
+GO
+/****** Object:  Table [dbo].[Вид_Документ]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Вид_Документ](
+	[Ключ_Вид_Документ] [int] NOT NULL,
+	[Наименование_Вид_Документ] [varchar](100) NULL,
+	[Определение_Вид_Документ] [varchar](1000) NULL,
+ CONSTRAINT [XPKВид_Документ] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Вид_Документ] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Гриф]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Гриф](
+	[Ключ_Гриф] [int] IDENTITY(1,1) NOT NULL,
+	[Наименование_Гриф] [varchar](200) NULL,
+	[Обозначение_Гриф] [varchar](20) NULL,
+	[Определение_Гриф] [varchar](200) NULL,
+ CONSTRAINT [XPKГриф] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Гриф] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Документ]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Документ](
+	[Ключ_Документ] [int] IDENTITY(1,1) NOT NULL,
+	[Ключ_Родитель_Документ] [int] NULL,
+	[Наименование_Документ] [varchar](500) NULL,
+	[Инвентарный_Номер_Документ] [varchar](20) NULL,
+	[Дата_Регистрации_Документ] [datetime] NULL,
+	[Обозначение_Документ] [varchar](20) NULL,
+	[Количество_Листов_Документ] [int] NULL,
+	[Ключ_Формат] [int] NOT NULL,
+	[Выпущен_Документ] [varchar](200) NULL,
+	[Принят_Документ] [varchar](20) NULL,
+	[Примечание_Документ] [varchar](20) NULL,
+	[Ключ_Вид_Документ] [int] NULL,
+	[Ключ_Тип_Документ] [int] NULL,
+	[Ключ_Организация] [int] NULL,
+	[Шифр_Документ] [varchar](500) NULL,
+	[Ключ_Статус_Документ] [int] NULL,
+ CONSTRAINT [XPKДокумент] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Документ] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+
+EXEC sys.sp_cdc_enable_table
+@source_schema = N'dbo',
+@source_name   = N'Документ',
+@role_name     = NULL,
+@supports_net_changes = 1
+GO
+/****** Object:  Table [dbo].[Документ_Извещение]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Документ_Извещение](
+	[Ключ_Извещение] [int] NULL,
+	[Ключ_Документ] [int] NULL,
+	[Ключ_Документ_Извещение] [int] IDENTITY(1,1) NOT NULL,
+	[Номер_Документ_Извещение] [int] NULL,
+	[Количество_Листов_Документ_Извещение] [int] NULL,
+ CONSTRAINT [XPKДокумент_Извещение] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Документ_Извещение] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Извещение]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Извещение](
+	[Ключ_Извещение] [int] IDENTITY(1,1) NOT NULL,
+	[Наименование_Извещение] [varchar](200) NULL,
+	[Обозначение_Извещение] [varchar](20) NULL,
+	[Дата_Выпуск_Извещение] [datetime] NULL,
+	[Дата_Срок_Извещение] [datetime] NULL,
+	[Ключ_Организация] [int] NULL,
+ CONSTRAINT [XPKИзвещение] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Извещение] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Организация]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Организация](
+	[Ключ_Организация] [int] IDENTITY(1,1) NOT NULL,
+	[Ключ_Родитель_Организация] [int] NULL,
+	[Наименование_Организация] [varchar](200) NULL,
+	[Обозначение_Организация] [varchar](20) NULL,
+	[Телефон_Организация] [varchar](20) NULL,
+	[Адрес_Организация] [varchar](200) NULL,
+	[Почта_Организация] [varchar](200) NULL,
+ CONSTRAINT [XPKОрганизация] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Организация] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Статус_Документ]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Статус_Документ](
+	[Ключ_Статус_Документ] [int] IDENTITY(1,1) NOT NULL,
+	[Наименование_Статус_Документ] [varchar](200) NULL,
+	[Обозначение_Статус_Документ] [varchar](20) NULL,
+ CONSTRAINT [XPKСтатус_Документ] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Статус_Документ] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Тип_Документ]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Тип_Документ](
+	[Ключ_Тип_Документ] [int] IDENTITY(1,1) NOT NULL,
+	[Наименование_Тип_Документ] [varchar](20) NULL,
+	[Определение_Тип_Документ] [varchar](1000) NULL,
+ CONSTRAINT [XPKТип_Документ] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Тип_Документ] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[Формат]    Script Date: 21.08.2014 8:50:28 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Формат](
+	[Ключ_Формат] [int] NOT NULL,
+	[Обозначение_Формат] [varchar](5) NULL,
+	[Размеры_Формат] [varchar](20) NULL,
+ CONSTRAINT [XPKФормат] PRIMARY KEY CLUSTERED 
+(
+	[Ключ_Формат] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+ALTER TABLE [dbo].[Документ]  WITH CHECK ADD  CONSTRAINT [R_13] FOREIGN KEY([Ключ_Тип_Документ])
+REFERENCES [dbo].[Тип_Документ] ([Ключ_Тип_Документ])
+GO
+ALTER TABLE [dbo].[Документ] CHECK CONSTRAINT [R_13]
+GO
+ALTER TABLE [dbo].[Документ]  WITH CHECK ADD  CONSTRAINT [R_15] FOREIGN KEY([Ключ_Документ])
+REFERENCES [dbo].[Документ] ([Ключ_Документ])
+GO
+ALTER TABLE [dbo].[Документ] CHECK CONSTRAINT [R_15]
+GO
+ALTER TABLE [dbo].[Документ]  WITH CHECK ADD  CONSTRAINT [R_5] FOREIGN KEY([Ключ_Формат])
+REFERENCES [dbo].[Формат] ([Ключ_Формат])
+GO
+ALTER TABLE [dbo].[Документ] CHECK CONSTRAINT [R_5]
+GO
+ALTER TABLE [dbo].[Документ]  WITH CHECK ADD  CONSTRAINT [R_6] FOREIGN KEY([Ключ_Родитель_Документ])
+REFERENCES [dbo].[Документ] ([Ключ_Документ])
+GO
+ALTER TABLE [dbo].[Документ] CHECK CONSTRAINT [R_6]
+GO
+ALTER TABLE [dbo].[Документ]  WITH CHECK ADD  CONSTRAINT [R_8] FOREIGN KEY([Ключ_Вид_Документ])
+REFERENCES [dbo].[Вид_Документ] ([Ключ_Вид_Документ])
+GO
+ALTER TABLE [dbo].[Документ] CHECK CONSTRAINT [R_8]
+GO
+ALTER TABLE [dbo].[Документ]  WITH CHECK ADD  CONSTRAINT [R_9] FOREIGN KEY([Ключ_Организация])
+REFERENCES [dbo].[Организация] ([Ключ_Организация])
+GO
+ALTER TABLE [dbo].[Документ] CHECK CONSTRAINT [R_9]
+GO
+ALTER TABLE [dbo].[Документ_Извещение]  WITH CHECK ADD  CONSTRAINT [R_11] FOREIGN KEY([Ключ_Извещение])
+REFERENCES [dbo].[Извещение] ([Ключ_Извещение])
+GO
+ALTER TABLE [dbo].[Документ_Извещение] CHECK CONSTRAINT [R_11]
+GO
+ALTER TABLE [dbo].[Документ_Извещение]  WITH CHECK ADD  CONSTRAINT [R_12] FOREIGN KEY([Ключ_Документ])
+REFERENCES [dbo].[Документ] ([Ключ_Документ])
+GO
+ALTER TABLE [dbo].[Документ_Извещение] CHECK CONSTRAINT [R_12]
+GO
+ALTER TABLE [dbo].[Извещение]  WITH CHECK ADD  CONSTRAINT [R_14] FOREIGN KEY([Ключ_Организация])
+REFERENCES [dbo].[Организация] ([Ключ_Организация])
+GO
+ALTER TABLE [dbo].[Извещение] CHECK CONSTRAINT [R_14]
+GO
+ALTER TABLE [dbo].[Организация]  WITH CHECK ADD  CONSTRAINT [R_10] FOREIGN KEY([Ключ_Родитель_Организация])
+REFERENCES [dbo].[Организация] ([Ключ_Организация])
+GO
+ALTER TABLE [dbo].[Организация] CHECK CONSTRAINT [R_10]
+GO

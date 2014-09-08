@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DBGridEhGrouping, ToolCtrlsEh, DBGridEhToolCtrls, DynVarsEh,
   ComCtrls, ActnList, GridsEh, DBAxisGridsEh, DBGridEh, ImgList, ToolWin,
-  DB, DBAccess, MSAccess, MemDS, ActnMan, ActnCtrls, XPStyleActnCtrls;
+  DB, DBAccess, MSAccess, MemDS, ActnMan, ActnCtrls, XPStyleActnCtrls,
+  frxClass, frxDBSet, frxCross;
 
 type
   TJournalDocumentForm = class(TForm)
@@ -32,6 +33,23 @@ type
     MSDocumentQuery_3: TStringField;
     MSDocumentQuery_4: TStringField;
     MSDocumentQuery__5: TStringField;
+    MSCopyDocumentQuery: TMSQuery;
+    MSCopyDocumentDataSource: TMSDataSource;
+    Action1: TAction;
+    frxDocumentReport: TfrxReport;
+    frxDBDocumentDataset: TfrxDBDataset;
+    frxDBCopyDataset: TfrxDBDataset;
+    MSIssueQuery: TMSQuery;
+    MSIssueDataSource: TMSDataSource;
+    frxDBIssueDataset: TfrxDBDataset;
+    frxCrossObject1: TfrxCrossObject;
+    MSCopyDocumentQueryCOMMIT_TIME: TStringField;
+    MSCopyDocumentQueryDSDesigner: TIntegerField;
+    MSCopyDocumentQueryDSDesigner2: TIntegerField;
+    MSIssueQueryDSDesigner: TStringField;
+    MSIssueQueryDSDesigner2: TStringField;
+    MSIssueQueryDSDesigner3: TIntegerField;
+    MSIssueQueryDSDesigner4: TIntegerField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure MSDocumentQueryBeforeUpdateExecute(Sender: TCustomMSDataSet;
@@ -39,6 +57,7 @@ type
     procedure DocumentAddExecute(Sender: TObject);
     procedure DocumentEditExecute(Sender: TObject);
     procedure DocumentDeleteExecute(Sender: TObject);
+    procedure Action1Execute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -119,6 +138,21 @@ begin
   end;
   end;
   MSDocumentQuery.RefreshRecord();
+end;
+
+procedure TJournalDocumentForm.Action1Execute(Sender: TObject);
+begin
+  MSCopyDocumentQuery.Close();
+  MSCopyDocumentQuery.Open();
+  
+  MSIssueQuery.Close();
+  MSIssueQuery.Open();
+  
+  frxDocumentReport.LoadFromFile('Report/Card1.fr3');
+  frxDocumentReport.ShowReport();
+  
+  MSCopyDocumentQuery.Close();
+  MSIssueQuery.Close();
 end;
 
 end.

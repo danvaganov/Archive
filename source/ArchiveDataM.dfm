@@ -9,7 +9,6 @@ object ArchiveDataModule: TArchiveDataModule
     Username = 'sa'
     Password = '4qypgm23qy'
     Server = 'mephi3.ru'
-    Connected = True
     AfterConnect = MSArchiveConnectionAfterConnect
     BeforeConnect = MSArchiveConnectionBeforeConnect
     AfterDisconnect = MSArchiveConnectionAfterDisconnect

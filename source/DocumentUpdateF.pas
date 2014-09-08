@@ -153,10 +153,8 @@ type
     MSStatusQuery__: TIntegerField;
     MSStatusQuery__2: TStringField;
     MSStatusQuery__3: TStringField;
-    frxDocumentReport: TfrxReport;
     frxDBChildDocumentDataset: TfrxDBDataset;
-    Card: TAction;
-    frxCrossObject1: TfrxCrossObject;
+    MSChildDocumentQuery__5: TDateTimeField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -172,7 +170,6 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure DeleteChildDocumentExecute(Sender: TObject);
     procedure OrganizationChoseExecute(Sender: TObject);
-    procedure CardExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -384,12 +381,6 @@ begin
     DBOrganizationLookupComboboxEh.KeyValue := MSOrganizationQuery.FieldByName('Ключ_Организация').AsInteger;
   end;
   OrganizationForm.Destroy();
-end;
-
-procedure TDocumentUpdateForm.CardExecute(Sender: TObject);
-begin
-  frxDocumentReport.LoadFromFile('Report/Card.fr3');
-  frxDocumentReport.ShowReport();
 end;
 
 end.
