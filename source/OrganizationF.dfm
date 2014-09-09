@@ -1,6 +1,6 @@
 object OrganizationForm: TOrganizationForm
-  Left = 468
-  Top = 131
+  Left = 930
+  Top = 127
   BorderStyle = bsToolWindow
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1072#1073#1086#1085#1077#1085#1090#1086#1074
   ClientHeight = 568

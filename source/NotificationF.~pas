@@ -32,7 +32,9 @@ type
     procedure FormShow(Sender: TObject);
     procedure NotificationAddExecute(Sender: TObject);
     procedure NotificationEditExecute(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure MSNotificationQueryBeforeUpdateExecute(
+      Sender: TCustomMSDataSet; StatementTypes: TStatementTypes;
+      Params: TMSParams);
   private
     { Private declarations }
   public
@@ -82,11 +84,14 @@ begin
   NotificationUpdateForm.Destroy();
 end;
 
-procedure TNotificationForm.FormClose(Sender: TObject;
-  var Action: TCloseAction);
+procedure TNotificationForm.MSNotificationQueryBeforeUpdateExecute(
+  Sender: TCustomMSDataSet; StatementTypes: TStatementTypes;
+  Params: TMSParams);
 begin
-  NotificationForm := nil;
-  Action := caFree;
+  if (stDelete in StatementTypes)or(stRefresh in StatementTypes) then begin
+    Params.ParamByName('RETURN_VALUE').ParamType := ptResult;
+    Params.ParamByName('RETURN_VALUE').DataType := ftInteger;
+  end;
 end;
 
 end.

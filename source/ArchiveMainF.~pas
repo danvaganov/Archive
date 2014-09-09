@@ -46,7 +46,8 @@ var
 
 implementation
 
-uses ArchiveDataM, OrganizationF, JournalDocumentF, KindDocumentF;
+uses ArchiveDataM, OrganizationF, JournalDocumentF, KindDocumentF,
+  NotificationF;
 
 {$R *.dfm}
 

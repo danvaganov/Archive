@@ -50,6 +50,18 @@ type
     MSIssueQueryDSDesigner2: TStringField;
     MSIssueQueryDSDesigner3: TIntegerField;
     MSIssueQueryDSDesigner4: TIntegerField;
+    MSDocumentNotificationQuery: TMSQuery;
+    MSDocumentNotificationDataSource: TMSDataSource;
+    frxDBDocumentNotificationDataset: TfrxDBDataset;
+    MSDocumentNotificationQuery_: TIntegerField;
+    MSDocumentNotificationQuery_2: TIntegerField;
+    MSDocumentNotificationQuery__: TIntegerField;
+    MSDocumentNotificationQuery__2: TIntegerField;
+    MSDocumentNotificationQuery___: TIntegerField;
+    MSDocumentNotificationQuery__3: TIntegerField;
+    MSDocumentNotificationQuery__4: TDateTimeField;
+    MSDocumentNotificationQuery__5: TStringField;
+    MSDocumentNotificationQuery_3: TStringField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure MSDocumentQueryBeforeUpdateExecute(Sender: TCustomMSDataSet;
@@ -147,10 +159,14 @@ begin
   
   MSIssueQuery.Close();
   MSIssueQuery.Open();
-  
+
+  MSDocumentNotificationQuery.Close();
+  MSDocumentNotificationQuery.Open();
+
   frxDocumentReport.LoadFromFile('Report/Card1.fr3');
   frxDocumentReport.ShowReport();
-  
+
+  MSDocumentNotificationQuery.Close();
   MSCopyDocumentQuery.Close();
   MSIssueQuery.Close();
 end;

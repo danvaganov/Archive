@@ -102,9 +102,9 @@ procedure TArchiveMainForm.JournalNotificationExecute(Sender: TObject);
 begin
   if (ArchiveDataModule.HasPermission('Archive.dbo.Документ', 'OBJECT', 'SELECT')) then
   begin
-    if (NotificationForm = nil) then
-      NotificationForm := TNotificationForm.Create(Application);
-    NotificationForm.Show();
+    NotificationForm := TNotificationForm.Create(Self);
+    NotificationForm.ShowModal();
+    NotificationForm.Destroy();
   end
   else
   begin

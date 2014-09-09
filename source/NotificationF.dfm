@@ -1,29 +1,26 @@
 object NotificationForm: TNotificationForm
   Left = 192
   Top = 124
-  Width = 645
-  Height = 529
+  BorderStyle = bsToolWindow
   Caption = #1046#1091#1088#1085#1072#1083' '#1080#1079#1074#1077#1097#1077#1085#1080#1081
+  ClientHeight = 410
+  ClientWidth = 604
   Color = clBtnFace
   Font.Charset = RUSSIAN_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
   Font.Name = 'Courier New'
   Font.Style = []
-  FormStyle = fsMDIChild
   OldCreateOrder = False
-  Position = poDefault
-  Visible = True
-  WindowState = wsMaximized
-  OnClose = FormClose
+  Position = poMainFormCenter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
   object DBGridEh1: TDBGridEh
     Left = 0
     Top = 44
-    Width = 629
-    Height = 447
+    Width = 604
+    Height = 366
     Align = alClient
     DataSource = MSNotificationDataSource
     DynProps = <>
@@ -36,6 +33,7 @@ object NotificationForm: TNotificationForm
     SearchPanel.FilterOnTyping = True
     SortLocal = True
     TabOrder = 0
+    OnDblClick = NotificationEditExecute
     Columns = <
       item
         DynProps = <>
@@ -67,7 +65,7 @@ object NotificationForm: TNotificationForm
   object ActionToolBar1: TActionToolBar
     Left = 0
     Top = 0
-    Width = 629
+    Width = 604
     Height = 44
     ActionManager = DocumentActionManager
     Caption = 'ActionToolBar1'
@@ -722,6 +720,7 @@ object NotificationForm: TNotificationForm
       
         '{:RETURN_VALUE = CALL Archive.dbo."SDAC_'#1048#1079#1074#1077#1097#1077#1085#1080#1077'_Select";1(:'#1050#1083#1102 +
         #1095'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077')}')
+    BeforeUpdateExecute = MSNotificationQueryBeforeUpdateExecute
     Left = 8
     Top = 96
     ParamData = <

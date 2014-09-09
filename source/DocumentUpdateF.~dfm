@@ -1,6 +1,6 @@
 object DocumentUpdateForm: TDocumentUpdateForm
-  Left = 489
-  Top = 339
+  Left = 471
+  Top = 235
   Width = 616
   Height = 435
   BorderStyle = bsSizeToolWin
@@ -42,7 +42,7 @@ object DocumentUpdateForm: TDocumentUpdateForm
     Top = 0
     Width = 600
     Height = 361
-    ActivePage = TabSheet1
+    ActivePage = TabSheet4
     Align = alTop
     TabOrder = 2
     object TabSheet1: TTabSheet
@@ -466,6 +466,63 @@ object DocumentUpdateForm: TDocumentUpdateForm
         end
       end
     end
+    object TabSheet4: TTabSheet
+      Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1103
+      ImageIndex = 3
+      object DBGridEh3: TDBGridEh
+        Left = 0
+        Top = 0
+        Width = 592
+        Height = 286
+        Align = alClient
+        DataSource = MSNotificationDataSource
+        DynProps = <>
+        Flat = True
+        IndicatorOptions = [gioShowRowIndicatorEh]
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit]
+        TabOrder = 0
+        OnDblClick = EditNotificationDocumentExecute
+        Columns = <
+          item
+            DynProps = <>
+            EditButtons = <>
+            FieldName = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077'_'#1058#1080#1087'_'#1048#1079#1084#1077#1085#1077#1085#1080#1077
+            Footers = <>
+            Title.Caption = #1058#1080#1087' '#1080#1079#1084#1077#1085#1077#1085#1080#1103
+            Width = 237
+          end
+          item
+            DynProps = <>
+            EditButtons = <>
+            FieldName = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+            Footers = <>
+            Title.Caption = #1048#1079#1074#1077#1097#1077#1085#1080#1077
+            Width = 153
+          end
+          item
+            DynProps = <>
+            EditButtons = <>
+            FieldName = #1044#1072#1090#1072'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+            Footers = <>
+            Title.Caption = #1044#1072#1090#1072
+          end>
+        object RowDetailData: TRowDetailPanelControlEh
+        end
+      end
+      object ActionToolBar2: TActionToolBar
+        Left = 0
+        Top = 286
+        Width = 592
+        Height = 44
+        ActionManager = ActionManager1
+        Align = alBottom
+        Caption = 'ActionToolBar1'
+        ColorMap.HighlightColor = clWhite
+        ColorMap.BtnSelectedColor = clBtnFace
+        ColorMap.UnusedColor = clWhite
+        Spacing = 0
+      end
+    end
   end
   object MSFormatQuery: TMSQuery
     Connection = ArchiveDataModule.MSArchiveConnection
@@ -771,9 +828,25 @@ object DocumentUpdateForm: TDocumentUpdateForm
             ImageIndex = 1
           end>
         ActionBar = ActionToolBar1
+      end
+      item
+        Items = <
+          item
+            Action = AddNotificationDocument
+            ImageIndex = 2
+          end
+          item
+            Action = EditNotificationDocument
+            ImageIndex = 0
+          end
+          item
+            Action = DeleteNotificationDocument
+            ImageIndex = 1
+          end>
+        ActionBar = ActionToolBar2
       end>
     Images = ImageList34
-    Left = 272
+    Left = 304
     Top = 104
     StyleName = 'XP Style'
     object SaveDocument: TAction
@@ -803,6 +876,24 @@ object DocumentUpdateForm: TDocumentUpdateForm
       Category = 'Organization'
       Caption = 'OrganizationChose'
       OnExecute = OrganizationChoseExecute
+    end
+    object AddNotificationDocument: TAction
+      Category = 'Notification'
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      ImageIndex = 2
+      OnExecute = AddNotificationDocumentExecute
+    end
+    object EditNotificationDocument: TAction
+      Category = 'Notification'
+      Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+      ImageIndex = 0
+      OnExecute = EditNotificationDocumentExecute
+    end
+    object DeleteNotificationDocument: TAction
+      Category = 'Notification'
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      ImageIndex = 1
+      OnExecute = DeleteNotificationDocumentExecute
     end
   end
   object ImageList34: TImageList
@@ -1661,5 +1752,75 @@ object DocumentUpdateForm: TDocumentUpdateForm
     BCDToCurrency = False
     Left = 48
     Top = 168
+  end
+  object MSNotificationQuery: TMSQuery
+    SQLRefresh.Strings = (
+      
+        '{:RETURN_VALUE = CALL Archive.dbo."SDAC_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077'_Selec' +
+        't";1(:'#1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077', :'#1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090')}')
+    Connection = ArchiveDataModule.MSArchiveConnection
+    SQL.Strings = (
+      
+        '{:RETURN_VALUE = CALL Archive.dbo."SDAC_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077'_Selec' +
+        't";1(:'#1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077', :'#1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090')}')
+    MasterSource = MSDocumentDataSource
+    MasterFields = #1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090
+    DetailFields = #1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090
+    Left = 272
+    Top = 104
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'RETURN_VALUE'
+        ParamType = ptResult
+        Value = 0
+      end
+      item
+        DataType = ftInteger
+        Name = #1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+        ParamType = ptInput
+      end
+      item
+        DataType = ftInteger
+        Name = #1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090
+        ParamType = ptInput
+      end>
+    object MSNotificationQuery_: TIntegerField
+      AutoGenerateValue = arAutoInc
+      FieldName = #1050#1083#1102#1095'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+    end
+    object MSNotificationQuery_2: TIntegerField
+      FieldName = #1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090
+    end
+    object MSNotificationQuery__: TIntegerField
+      FieldName = #1050#1083#1102#1095'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+      ReadOnly = True
+    end
+    object MSNotificationQuery__2: TIntegerField
+      FieldName = #1053#1086#1084#1077#1088'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+    end
+    object MSNotificationQuery___: TIntegerField
+      FieldName = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086'_'#1051#1080#1089#1090#1086#1074'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+    end
+    object MSNotificationQuery__3: TIntegerField
+      FieldName = #1050#1083#1102#1095'_'#1058#1080#1087'_'#1048#1079#1084#1077#1085#1077#1085#1080#1077
+    end
+    object MSNotificationQuery__4: TStringField
+      FieldName = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077'_'#1058#1080#1087'_'#1048#1079#1084#1077#1085#1077#1085#1080#1077
+      Size = 200
+    end
+    object MSNotificationQuery_3: TStringField
+      FieldName = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+      ReadOnly = True
+      Size = 200
+    end
+    object MSNotificationQuery__5: TDateTimeField
+      FieldName = #1044#1072#1090#1072'_'#1044#1086#1082#1091#1084#1077#1085#1090'_'#1048#1079#1074#1077#1097#1077#1085#1080#1077
+    end
+  end
+  object MSNotificationDataSource: TMSDataSource
+    DataSet = MSNotificationQuery
+    Left = 272
+    Top = 136
   end
 end

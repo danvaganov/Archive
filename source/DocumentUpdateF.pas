@@ -155,6 +155,23 @@ type
     MSStatusQuery__3: TStringField;
     frxDBChildDocumentDataset: TfrxDBDataset;
     MSChildDocumentQuery__5: TDateTimeField;
+    TabSheet4: TTabSheet;
+    DBGridEh3: TDBGridEh;
+    ActionToolBar2: TActionToolBar;
+    MSNotificationQuery: TMSQuery;
+    MSNotificationDataSource: TMSDataSource;
+    MSNotificationQuery_: TIntegerField;
+    MSNotificationQuery_2: TIntegerField;
+    MSNotificationQuery__: TIntegerField;
+    MSNotificationQuery__2: TIntegerField;
+    MSNotificationQuery___: TIntegerField;
+    MSNotificationQuery__3: TIntegerField;
+    AddNotificationDocument: TAction;
+    EditNotificationDocument: TAction;
+    DeleteNotificationDocument: TAction;
+    MSNotificationQuery__4: TStringField;
+    MSNotificationQuery_3: TStringField;
+    MSNotificationQuery__5: TDateTimeField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -170,6 +187,9 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure DeleteChildDocumentExecute(Sender: TObject);
     procedure OrganizationChoseExecute(Sender: TObject);
+    procedure AddNotificationDocumentExecute(Sender: TObject);
+    procedure EditNotificationDocumentExecute(Sender: TObject);
+    procedure DeleteNotificationDocumentExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -183,7 +203,7 @@ var
 
 implementation
 
-uses ArchiveDataM, OrganizationF;
+uses ArchiveDataM, OrganizationF, NotificationDocumentUpdateF;
 
 {$R *.dfm}
 
@@ -215,6 +235,9 @@ begin
 
   MSStatusQuery.Close();
   MSStatusQuery.Open();
+
+  MSNotificationQuery.Close();
+  MSNotificationQuery.Open();
 
   MSDocumentQuery.Close();
   MSDocumentQuery.ParamByName('Ключ_Документ').Value := keyDocument;
@@ -270,6 +293,7 @@ begin
   MSTypeQuery.Close();
   MSKindQuery.Close();
   MSOrganizationQuery.Close();
+  MSNotificationQuery.Close();
 end;
 
 
@@ -381,6 +405,50 @@ begin
     DBOrganizationLookupComboboxEh.KeyValue := MSOrganizationQuery.FieldByName('Ключ_Организация').AsInteger;
   end;
   OrganizationForm.Destroy();
+end;
+
+procedure TDocumentUpdateForm.AddNotificationDocumentExecute(
+  Sender: TObject);
+begin
+  NotificationDocumentUpdateForm := TNotificationDocumentUpdateForm.Create(Self);
+  NotificationDocumentUpdateForm.keyDocument := MSDocumentQuery.FieldByName('Ключ_Документ').AsInteger;
+  if (NotificationDocumentUpdateForm.ShowModal() = mrOk) then
+  begin
+    MSNotificationQuery.Refresh();
+    MSNotificationQuery.Locate('Ключ_Документ_Извещение', NotificationDocumentUpdateForm.keyDocumentNotification, [loCaseInsensitive, loPartialKey]);
+  end;
+  NotificationDocumentUpdateForm.Destroy();
+end;
+
+procedure TDocumentUpdateForm.EditNotificationDocumentExecute(
+  Sender: TObject);
+begin
+  if (MSNotificationQuery.RecordCount = 0) then
+    raise Exception.Create('Записей для изменения не найдно');
+  NotificationDocumentUpdateForm := TNotificationDocumentUpdateForm.Create(Self);
+  NotificationDocumentUpdateForm.keyDocumentNotification := MSNotificationQuery.FieldByName('Ключ_Документ_Извещение').AsInteger;
+  if (NotificationDocumentUpdateForm.ShowModal() = mrOk) then
+  begin
+    MSNotificationQuery.RefreshRecord();
+  end;
+  NotificationDocumentUpdateForm.Destroy();
+end;
+
+procedure TDocumentUpdateForm.DeleteNotificationDocumentExecute(
+  Sender: TObject);
+begin
+    ArchiveDataModule.MSArchiveConnection.StartTransaction();
+    try
+      MSNotificationQuery.Delete();
+      ArchiveDataModule.MSArchiveConnection.Commit();
+    except
+    on CommonException: Exception do
+    begin
+      ArchiveDataModule.MSArchiveConnection.Rollback();
+      raise;
+    end;
+    end;
+    MSChildDocumentQuery.RefreshRecord();
 end;
 
 end.
